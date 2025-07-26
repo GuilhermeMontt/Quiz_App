@@ -8,6 +8,7 @@ const initialState = {
     questions,
     currentQuestion: 0,
     score: 0,
+    answerSelected: false,
 }
 
 const quizReducer = (state, action) => {
@@ -25,6 +26,7 @@ const quizReducer = (state, action) => {
                 questions: reorderedQuestions
             }
         case "CHANGE_QUESTION":
+            state.answerSelected = false; // Reset answer selection
             const nextQuestion = state.currentQuestion + 1;
             let endGame = false;
             if (!state.questions[nextQuestion]) {
@@ -40,10 +42,27 @@ const quizReducer = (state, action) => {
         case "RESTART_GAME":
             const reorderedQuestionsAgain = state.questions.sort(() => Math.random() - 0.5);
             return {
+                ...state,
                 gameStage: stages[0],
                 currentQuestion: 0,
                 score: 0,
                 questions: reorderedQuestionsAgain
+            }
+        
+        case "CHECK_ANS":
+            if(state.answerSelected) return state; // Prevent multiple selections
+
+            const { answer, option } = action.payload;
+            let correctAnswer = false;
+
+            if (answer === option) {
+                correctAnswer = true;
+            }
+
+            return {
+                ...state,
+                score: correctAnswer ? state.score + 1 : state.score,
+                answerSelected: true
             }
 
         default:
