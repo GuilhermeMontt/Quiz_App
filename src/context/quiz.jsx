@@ -9,6 +9,8 @@ const initialState = {
     currentQuestion: 0,
     score: 0,
     answerSelected: false,
+    help: false,
+    optionToHide: null,
 }
 
 const quizReducer = (state, action) => {
@@ -50,7 +52,34 @@ const quizReducer = (state, action) => {
                 ...state,
                 currentQuestion: nextQuestion,
                 gameStage: endGame ? stages[3] : state.gameStage,
+                help: false, // Reset help visibility
             }
+        
+        case "SHOW_TIP":
+            return {
+                ...state,
+                help: "tip",
+            }
+        
+        case "REMOVE_OPTION":
+            const questionWithoutOption = state.questions[state.currentQuestion];
+
+            let repeat = true;
+            let optionToHide = null;
+
+            questionWithoutOption.options.forEach((option) => {
+                if (option !== questionWithoutOption.answer && repeat) {
+                    optionToHide = option;
+                    repeat = false;
+                }
+            })
+
+            return {
+                ...state,
+                help: "remove",
+                optionToHide: optionToHide,
+            }
+
         
         case "RESTART_GAME":
             return {

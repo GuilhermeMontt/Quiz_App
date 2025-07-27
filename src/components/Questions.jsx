@@ -18,14 +18,36 @@ const Questions = () => {
         <h2>{currentQuestion.question}</h2>
         <div id="options-container">
             {currentQuestion.options.map((option) => (
-                <Option 
+                (option !== QuizState.optionToHide && (<Option 
                 option={option} 
                 key={option} 
                 answer={currentQuestion.answer} 
                 selectOption={() => onSelectOption(option)}
-                />
+                />))
             ))}
         </div>
+        {!QuizState.answerSelected &&
+        (<>
+          {
+          currentQuestion.tip && QuizState.help === false && 
+          (<button onClick={() => dispatch({ type: "SHOW_TIP"})}>
+            Dica
+          </button>)
+          }
+          {
+            currentQuestion.tip && QuizState.help === "tip" && 
+          (<p>{currentQuestion.tip}</p>)
+          }
+          {
+            !QuizState.help && (
+              <button onClick={() => dispatch({ type: "REMOVE_OPTION"})}>
+                Eliminar uma opção
+              </button>
+            )
+          }
+        </>)
+        }
+
         {QuizState.answerSelected && 
         <button onClick={() => dispatch({ type: "CHANGE_QUESTION" })}>
             Continuar
